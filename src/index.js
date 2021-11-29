@@ -106,20 +106,13 @@ class Game extends React.Component {
         'Go to move #' + move :
         'Go to game start';
       const squareClicked = step.squareClicked;
-      if (!squareClicked) {
+      
         return (
           <li key={move}>
+            <p>{findColRowfromSquareClicked(squareClicked)}</p>
             <button onClick={() => this.jumpTo(move)}>{desc}</button>
           </li>
         );
-      } else {
-        return (
-          <li key={move}>
-            <p>Square Clicked: {squareClicked}</p>
-            <button onClick={() => this.jumpTo(move)}>{desc}</button>
-          </li>
-        );
-      }
       
     });
 
@@ -151,6 +144,7 @@ class Game extends React.Component {
 
 ReactDOM.render(<Game />, document.getElementById("root"));
 
+//This goes through all the different possible winning combinations and checks to see if any squares match
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
@@ -169,4 +163,40 @@ function calculateWinner(squares) {
     }
   }
   return null;
+}
+
+function findColRowfromSquareClicked(squareClicked) {
+  let colRow = null;
+  switch(squareClicked) {
+    case 0:
+      colRow = 'Col 1, Row 1';
+      break;
+    case 1:
+      colRow = 'Col 2, Row 1';
+      break;
+    case 2:
+      colRow = 'Col 3, Row 1';
+      break;
+    case 3:
+      colRow = 'Col 1, Row 2';
+      break;
+    case 4:
+      colRow = 'Col 2, Row 2';
+      break;
+    case 5:
+      colRow = 'Col 3, Row 2';
+      break;
+    case 6:
+      colRow = 'Col 1, Row 3';
+      break;
+    case 7:
+      colRow = 'Col 2, Row 3';
+      break;
+    case 8:
+      colRow = 'Col 3, Row 3';
+      break;
+    default:
+      colRow = null;
+  }
+  return colRow;
 }
