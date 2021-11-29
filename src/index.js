@@ -62,6 +62,8 @@ class Game extends React.Component {
     };
   }
 
+  
+
   //The handleClick method responds to the onClick method from the children. The argument 'i' passed in will determine what 
   //square was clicked.
   handleClick(i) {
@@ -75,11 +77,12 @@ class Game extends React.Component {
     this.setState({
       history: history.concat([
         {
-          squares: squares
+          squares: squares,
+          squareClicked: i,
         }
       ]),
       stepNumber: history.length,
-      xIsNext: !this.state.xIsNext
+      xIsNext: !this.state.xIsNext,
     });
   }
 
@@ -96,17 +99,28 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-
+    
+    
     const moves = history.map((step, move) => {
       const desc = move ?
         'Go to move #' + move :
         'Go to game start';
-      console.log(step);
-      return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
-        </li>
-      );
+      const squareClicked = step.squareClicked;
+      if (!squareClicked) {
+        return (
+          <li key={move}>
+            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          </li>
+        );
+      } else {
+        return (
+          <li key={move}>
+            <p>Square Clicked: {squareClicked}</p>
+            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          </li>
+        );
+      }
+      
     });
 
     let status;
