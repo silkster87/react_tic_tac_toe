@@ -24,24 +24,34 @@ class Board extends React.Component {
     );
   }
 
+  loopSquares(start, end) {
+    let boardSquares = [];
+    for (var i = start; i < end + 1; i++) {
+      boardSquares.push(this.renderSquare(i));
+    }
+    return boardSquares;
+  }
+
+  rowOfSquares(row, i) {
+    return (
+      <div className="board-row" key={row}>
+        {this.loopSquares(i, i+2)}
+      </div>
+    );
+  }
+
+
   render() {
+    
+    let boardOfSquares = [];
+
+    for (var row = 0; row < 3; row++) {
+      boardOfSquares.push(this.rowOfSquares(row, (row*3)));
+    }
+
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {boardOfSquares}
       </div>
     );
   }
@@ -107,13 +117,21 @@ class Game extends React.Component {
         'Go to game start';
       const squareClicked = step.squareClicked;
       
-        return (
-          <li key={move}>
-            <p>{findColRowfromSquareClicked(squareClicked)}</p>
+        if (this.state.stepNumber === move) {
+          return (
+            <li key={move}>
+            <b>{findColRowfromSquareClicked(squareClicked)}</b>
             <button onClick={() => this.jumpTo(move)}>{desc}</button>
           </li>
-        );
-      
+          );
+        } else {
+          return (
+            <li key={move}>
+              <p>{findColRowfromSquareClicked(squareClicked)}</p>
+              <button onClick={() => this.jumpTo(move)}>{desc}</button>
+            </li>
+          );
+        }     
     });
 
     let status;
