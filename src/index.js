@@ -20,6 +20,7 @@ class Board extends React.Component {
       <Square
         value={this.props.squares[i]} //The value of this is set on Line 121
         onClick={() => this.props.onClick(i)} //The onClick method will go up to the parent on Line 122
+        key = {i}
       />
     );
   }
@@ -68,7 +69,8 @@ class Game extends React.Component {
         }
       ],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      toggle: true
     };
   }
 
@@ -93,6 +95,7 @@ class Game extends React.Component {
       ]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
+      
     });
   }
 
@@ -105,13 +108,20 @@ class Game extends React.Component {
     });
   }
 
+  toggleMoves() {
+    
+    this.setState({
+      toggle: !this.state.toggle
+    });
+  }
+
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     
     
-    const moves = history.map((step, move) => {
+    var moves = history.map((step, move) => {
       const desc = move ?
         'Go to move #' + move :
         'Go to game start';
@@ -134,6 +144,10 @@ class Game extends React.Component {
         }     
     });
 
+    if (!this.state.toggle) {
+      moves = moves.reverse();
+    }
+
     let status;
     if (winner) {
       status = "Winner: " + winner;
@@ -152,6 +166,9 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
+        </div>
+        <div className = "toggle-btn">
+          <button onClick={() => this.toggleMoves()}>Toggle</button>
         </div>
       </div>
     );
