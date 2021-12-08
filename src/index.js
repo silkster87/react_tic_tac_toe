@@ -6,23 +6,48 @@ function Square(props) {
 //We lift the state up by calling the "props". So in the props.onClick we look at the parent of the Square for the onClick Method
 //Also for the props.value we look at the parent for what value was set to it. The parent of Square is Board.
 //the props.value on Line 11 is determined by the value set to it on Line 21.
-  return (
-    <button className="square" onClick={props.onClick}>
-      {props.value} 
-    </button>
-  );
+  if(props.winningCombination) {
+    return (
+      <button className="square" onClick={props.onClick} style={{background: 'yellow'}}>
+        {props.value} 
+      </button>
+    );
+  } else {
+    return (
+      <button className="square" onClick={props.onClick}>
+        {props.value} 
+      </button>
+    );
+  }
 }
 
 class Board extends React.Component {
   //We lift the state up again by calling "props" to look at the parent value and onClick method. The parent of Board is Game.
   renderSquare(i) {
-    return (
-      <Square
-        value={this.props.squares[i]} //The value of this is set on Line 121
-        onClick={() => this.props.onClick(i)} //The onClick method will go up to the parent on Line 122
-        key = {i}
-      />
-    );
+
+    var defaultSquare = <Square
+                          value={this.props.squares[i]} 
+                          onClick={() => this.props.onClick(i)} 
+                          key = {i}
+                        />
+
+    if (this.props.winningCombination) {
+      if (this.props.winningCombination.includes(i)) {
+        return (
+          <Square
+            value={this.props.squares[i]} 
+            onClick={() => this.props.onClick(i)} 
+            key = {i}
+            winningCombination={true}
+          />
+        );
+      } else {
+        return defaultSquare;
+      }
+    } else {
+      return defaultSquare;
+    }
+    
   }
 
   loopSquares(start, end) {
@@ -115,6 +140,8 @@ class Game extends React.Component {
     });
   }
 
+  
+
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
@@ -149,10 +176,15 @@ class Game extends React.Component {
     }
 
     let status;
+    let winningCombination;
     if (winner) {
-      status = "Winner: " + winner;
+      status = "Winner: " + winner.squares;
+      winningCombination = winner.winningCombination;
+    } else if (!winner && current.squares.every(checkTruthy)) {
+      status = 'Draw!';
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
+      winningCombination = null;
     }
 
     return (
@@ -161,6 +193,7 @@ class Game extends React.Component {
           <Board
             squares={current.squares} //This displays the current game status telling which squares have X or O etc
             onClick={i => this.handleClick(i)} //We tell specifically to use the handleClick method with the argument 'i' passed to it
+            winningCombination={winningCombination}
           />
         </div>
         <div className="game-info">
@@ -172,6 +205,8 @@ class Game extends React.Component {
         </div>
       </div>
     );
+
+    
   }
 }
 
@@ -194,11 +229,19 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {squares : squares[a],
+              winningCombination: lines[i]
+            };
     }
   }
   return null;
 }
+
+function checkTruthy(el) {
+  if(el)
+  return el;
+}
+
 
 function findColRowfromSquareClicked(squareClicked) {
   let colRow = null;
